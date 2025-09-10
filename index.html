@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Happy Birthday 🎂</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+      position: relative;
+    }
+    .screen {
+      text-align: center;
+      background: rgba(255, 255, 255, 0.85);
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      max-width: 500px;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      z-index: 2;
+      display: none;
+    }
+    .screen.active {
+      display: block;
+    }
+    .screen h1 {
+      font-size: 22px;
+      color: #ff4081;
+      margin-bottom: 15px;
+      line-height: 1.5;
+    }
+    .screen p {
+      font-size: 16px;
+      color: #333;
+      line-height: 1.4;
+    }
+    button {
+      background: #ff4081;
+      color: #fff;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-top: 15px;
+      transition: 0.3s;
+    }
+    button:hover {
+      background: #e91e63;
+    }
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+    .countdown {
+      font-size: 40px;
+      font-weight: bold;
+      color: #ff9800;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="confetti"></canvas>
+
+  <!-- Screen 1 -->
+  <div class="screen active" id="readyScreen">
+    <h1>🎉 Are you ready for your Birthday? 🎉</h1>
+    <button onclick="startCountdown()">Yes</button>
+  </div>
+
+  <!-- Screen 2: Countdown -->
+  <div class="screen" id="countdownScreen">
+    <h1>⏳ Countdown starts...</h1>
+    <div class="countdown" id="countdown">3</div>
+  </div>
+
+  <!-- Screen 3: Final Wish -->
+  <div class="screen" id="finalScreen">
+    <h1>🎉 Happy Birthday Tanya, Happy birthday to the one who always has my back, no matter the distance. Even though we're miles apart, your friendship brings me comfort and strength. See you super soon. 🎉</h1>
+    <p>From someone... one of your friend zone 💚</p>
+  </div>
+
+  <!-- Background Music -->
+  <audio id="song" loop>
+    <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+    const readyScreen = document.getElementById("readyScreen");
+    const countdownScreen = document.getElementById("countdownScreen");
+    const finalScreen = document.getElementById("finalScreen");
+    const countdownEl = document.getElementById("countdown");
+    const song = document.getElementById("song");
+
+    function startCountdown() {
+      readyScreen.classList.remove("active");
+      countdownScreen.classList.add("active");
+
+      let counter = 3;
+      countdownEl.textContent = counter;
+
+      const interval = setInterval(() => {
+        counter--;
+        countdownEl.textContent = counter;
+        if (counter === 0) {
+          clearInterval(interval);
+          countdownScreen.classList.remove("active");
+          finalScreen.classList.add("active");
+          song.play();
+          startConfetti();
+        }
+      }, 1000);
+    }
+
+    // Confetti setup
+    const canvas = document.getElementById("confetti");
+    const ctx = canvas.getContext("2d");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const confetti = [];
+    const colors = ["#ff0", "#ff4081", "#3f51b5", "#4caf50", "#ff9800", "#e91e63"];
+
+    function Confetto() {
+      this.x = Math.random() * canvas.width;
+      this.y = Math.random() * canvas.height - canvas.height;
+      this.color = colors[Math.floor(Math.random() * colors.length)];
+      this.size = Math.random() * 8 + 4;
+      this.speed = Math.random() * 3 + 2;
+    }
+
+    function drawConfetti() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      confetti.forEach((c) => {
+        ctx.beginPath();
+        ctx.arc(c.x, c.y, c.size, 0, Math.PI * 2);
+        ctx.fillStyle = c.color;
+        ctx.fill();
+      });
+    }
+
+    function updateConfetti() {
+      confetti.forEach((c) => {
+        c.y += c.speed;
+        if (c.y > canvas.height) {
+          c.y = -10;
+          c.x = Math.random() * canvas.width;
+        }
+      });
+    }
+
+    function loop() {
+      drawConfetti();
+      updateConfetti();
+      requestAnimationFrame(loop);
+    }
+
+    function startConfetti() {
+      for (let i = 0; i < 200; i++) {
+        confetti.push(new Confetto());
+      }
+      loop();
+    }
+
+    window.addEventListener("resize", () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+  </script>
+</body>
+</html>
